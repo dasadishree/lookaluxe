@@ -1,0 +1,18 @@
+//
+//  FindView.swift
+//  Lookaluxe
+//
+//  Created by Adishree Das on 6/6/25.
+//
+
+import SwiftUI
+
+struct FindView: View {
+    var body: some View {
+        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+    }
+}
+
+#Preview {
+    FindView()
+}

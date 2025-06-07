@@ -6,8 +6,32 @@
 //
 
 import SwiftUI
+import PhotosUI
+import AVFoundation
 
 struct ContentView: View {
+    @State private var showFindView = false
+    
+    func requestPhotoAndCameraAccess() {
+        PHPhotoLibrary.requestAuthorization{ status in switch status {
+            case .authorized, .limited:
+                print("Photo library access granted")
+            case .denied, .restricted, .notDetermined:
+                print("Photo library access denied or restricted")
+            @unknown default:
+                print("Photo library access Unknown status")
+            }
+        }
+        
+        AVCaptureDevice.requestAccess(for: .video) { granted in
+            if granted {
+                print("Camera access granted")
+            } else {
+                print("Camera access denied")
+            }
+        }
+    }
+    
     var body: some View {
         VStack {
             Image(systemName: "diamond")
@@ -26,16 +50,28 @@ struct ContentView: View {
                 .foregroundColor(.brown)
                 .italic()
             
+            Button("Allow Access to Photos & Camera"){
+                requestPhotoAndCameraAccess()
+            }
+            .buttonStyle(.bordered)
+            .background(Color(red: 191/255, green: 121/255, blue: 71/255))
+            .foregroundColor(.white)
             HStack {
-                Button("Explore", action: {print("works")})
-                    .background(Color(red: 191/255, green: 121/255, blue: 71/255))
-                    .foregroundColor(.white)
-                    .buttonStyle(.bordered)
+                NavigationLink(destination: ExploreView()) {
+                    Text("Explore")
+                        .padding()
+                        .background(Color(red:191/255, green:121/255, blue:71/255))
+                        .foregroundColor(.white)
+                        .cornerRadius(8)
+                }
                 
-                Button("Allow Access to Photos", action: {print("allows works")})
-                    .buttonStyle(.bordered)
-                    .background(Color(red: 191/255, green: 121/255, blue: 71/255))
-                    .foregroundColor(.white)
+                NavigationLink(destination: FindView()) {
+                    Text("Find")
+                        .padding()
+                        .background(Color(red:191/255, green:121/255, blue:71/255))
+                        .foregroundColor(.white)
+                        .cornerRadius(8)
+                }
             }
         }
         .padding()
