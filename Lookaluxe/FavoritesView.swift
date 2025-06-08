@@ -10,7 +10,7 @@ import SwiftUI
 struct FavoritesView: View {
     var body: some View {
         HStack{
-            Text("Favorites")
+            Text("Saved")
                 .font(.system(size: 50, design:.serif))
                 .fontWeight(.heavy)
                 .foregroundColor(.brown)
