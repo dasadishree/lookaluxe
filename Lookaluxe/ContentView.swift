@@ -57,8 +57,8 @@ struct ContentView: View {
             .background(Color(red: 191/255, green: 121/255, blue: 71/255))
             .foregroundColor(.white)
             HStack {
-                NavigationLink(destination: ExploreView()) {
-                    Text("Explore")
+                NavigationLink(destination: FavoritesView()) {
+                    Text("Saved")
                         .padding()
                         .background(Color(red:191/255, green:121/255, blue:71/255))
                         .foregroundColor(.white)
