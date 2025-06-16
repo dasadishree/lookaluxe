@@ -7,6 +7,15 @@
 
 import SwiftUI
 
+//struct productData: Codable {
+//    let url: URL?
+//    let condience: Double
+//    let name: String
+//    let price: Double
+//    let link: String
+//}
+
+
 struct FavoritesView: View {
     var body: some View {
         HStack{
@@ -22,6 +31,7 @@ struct FavoritesView: View {
     }
 }
     
+
 #Preview {
     FavoritesView()
 }
