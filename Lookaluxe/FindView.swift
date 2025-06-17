@@ -7,6 +7,7 @@
 
 import SwiftUI
 import PhotosUI
+import SwiftData
 
 //swift UI view
 struct FindView: View {
@@ -17,6 +18,10 @@ struct FindView: View {
     @State private var selectedImage: UIImage?
     @State private var savedImageURL: URL?
     @State private var backendResult: String?
+    @State private var showingSaveAlert = false
+    @State private var itemName: String = ""
+    
+    @Environment(\.modelContext) private var modelContext
     
     var body: some View {
         VStack{
@@ -44,12 +49,29 @@ struct FindView: View {
                     .foregroundColor(.gray)
             }
             
-            //backend result display
+            //backend result display (displays results and save to favorites button)
             if let result = backendResult {
-                Text("Results:\n\(result)")
+                VStack(spacing: 10) {
+                    Text("Results:")
+                        .font(.headline)
+                        .foregroundColor(.brown)
+                    
+                    Text(result)
+                        .padding()
+                        .font(.caption)
+                        .foregroundColor(.black)
+                        .background(Color.white.opacity(0.8))
+                        .cornerRadius(8)
+                    
+                    // Save button
+                    Button("SAVE TO FAVORITES") {
+                        showingSaveAlert = true //shows an alert to save item and name it 
+                    }
                     .padding()
-                    .font(.caption)
-                    .foregroundColor(.black)
+                    .background(Color.green)
+                    .foregroundColor(.white)
+                    .cornerRadius(8)
+                }
             }
             
 //            button & functionality
@@ -93,15 +115,45 @@ struct FindView: View {
             }) {
                 ImagePicker(sourceType: sourceType, selectedImage: $selectedImage)
             }
+            //alert to save item and name it 
+            .alert("Save Item", isPresented: $showingSaveAlert) {
+                TextField("Enter item name", text: $itemName)
+                Button("Save") {
+                    saveToFavorites() //function saving item to favorites
+                }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("Name your saved item")
+            }
             
         }
         .padding()
         .frame(maxWidth: .infinity, maxHeight:.infinity)
         .background(Color.brown.opacity(0.2))
     }
+    
+// function saving item to favorites
+    private func saveToFavorites() {
+        guard let image = selectedImage,
+              let result = backendResult else { 
+            print("❌ Cannot save: missing image or backend result")
+            return 
+        } //doesn't save if image/result missing
+        
+        let imageData = image.jpegData(compressionQuality: 0.8) //compresses image
+        let name = itemName.isEmpty ? "Item Name" : itemName //default name
+        
+        let savedItem = SavedItem(
+            imageData: imageData,
+            backendResult: result, 
+            name: name
+        )//saves image and result and name
+        
+        modelContext.insert(savedItem) //saves item to favorites?
+    }
 }
 
-
+//function uploading image to backend
 func uploadImage(_ image: UIImage, completion: @escaping (Result<String, Error>) -> Void) {
     guard let url = URL(string: "http://127.0.0.1:5000/upload") else { return }
     

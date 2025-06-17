@@ -6,10 +6,13 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 
 struct LookaluxeApp: App {
+    let container: ModelContainer //container for swift data
+    
     init() {
         //sets global tint to brown
         let appearance = UINavigationBarAppearance()
@@ -25,6 +28,15 @@ struct LookaluxeApp: App {
         UINavigationBar.appearance().compactAppearance = appearance
         UINavigationBar.appearance().tintColor = UIColor.brown
         
+        // Initialize Swift Data container
+        do {
+            let config = ModelConfiguration(isStoredInMemoryOnly: false)
+            container = try ModelContainer(for: SavedItem.self, configurations: config)
+            print("Swift Data container initialized successfully")
+        } catch {
+            print("Failed to initialize Swift Data container: \(error)")
+            fatalError("Could not initialize Swift Data container")
+        }
     }
     
     var body: some Scene {
@@ -34,5 +46,6 @@ struct LookaluxeApp: App {
 //                changes accent color? dk if it worked tho
                 .accentColor(Color(red: 163/255, green: 107/255, blue: 67/255 ))
         }
+        .modelContainer(container)
     }
 }
