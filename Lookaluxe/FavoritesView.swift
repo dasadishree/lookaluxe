@@ -41,6 +41,7 @@ struct FavoritesView: View {
                             .font(.caption)
                             .foregroundColor(.gray)
                             .multilineTextAlignment(.center)
+                        
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
@@ -97,8 +98,21 @@ struct FavoritesView: View {
 struct SavedItemRow: View {
     let item: SavedItem
     
+    // codable decoding json into variables
+    struct BackendResult: Codable {
+        let item_detected: String
+        let confidence: Double
+        let results: [ResultItem]
+        struct ResultItem: Codable, Identifiable {
+            var id: String { name + price + link }
+            let name: String
+            let price: String
+            let link: String
+        }
+    }
+    
     var body: some View {
-        HStack {
+        HStack(alignment: .top) {
             if let imageData = item.imageData, let uiImage = UIImage(data: imageData) {
                 Image(uiImage: uiImage)
                     .resizable()
@@ -120,10 +134,38 @@ struct SavedItemRow: View {
                     .font(.headline)
                     .foregroundColor(.primary)
                 
-                Text(item.backendResult)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                    .lineLimit(2)
+                // shows backend result if it exists on front end
+                if let data = item.backendResult.data(using: .utf8),
+                   let result = try? JSONDecoder().decode(BackendResult.self, from: data) {
+                    Text("Detected: \(result.item_detected)")
+                        .font(.subheadline)
+                        .foregroundColor(.brown)
+                    Text(String(format: "Confidence: %.2f", result.confidence))
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    ForEach(result.results) { res in
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("• \(res.name) (\(res.price))")
+                                .font(.caption)
+                                .foregroundColor(.primary)
+                            if let url = URL(string: res.link) {
+                                HStack {
+                                    Spacer()
+                                    Link("View Item", destination: url)
+                                        .font(.caption2)
+                                        .foregroundColor(.blue)
+                                    Spacer()
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    // otherwise shows plain text
+                    Text(item.backendResult)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .lineLimit(2)
+                }
                 
                 Text(item.timestamp, style: .date)
                     .font(.caption2)

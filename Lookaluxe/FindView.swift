@@ -23,6 +23,19 @@ struct FindView: View {
     
     @Environment(\.modelContext) private var modelContext
     
+    // decodes backend result json into variables (same as FavoritesView)
+    struct BackendResult: Codable {
+        let item_detected: String
+        let confidence: Double
+        let results: [ResultItem]
+        struct ResultItem: Codable, Identifiable {
+            var id: String { name + price + link }
+            let name: String
+            let price: String
+            let link: String
+        }
+    }
+    
     var body: some View {
         VStack{
             
@@ -56,12 +69,36 @@ struct FindView: View {
                         .font(.headline)
                         .foregroundColor(.brown)
                     
-                    Text(result)
-                        .padding()
-                        .font(.caption)
-                        .foregroundColor(.black)
-                        .background(Color.white.opacity(0.8))
-                        .cornerRadius(8)
+                    //displays decoded json backend result if it exists on front end
+                    if let data = result.data(using: .utf8),
+                       let decoded = try? JSONDecoder().decode(BackendResult.self, from: data) {
+                        Text("Detected: \(decoded.item_detected)")
+                            .font(.subheadline)
+                            .foregroundColor(.brown)
+                        Text(String(format: "Confidence: %.2f", decoded.confidence))
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        ForEach(decoded.results) { res in
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("• \(res.name) (\(res.price))")
+                                    .font(.caption)
+                                    .foregroundColor(.primary)
+                                if let url = URL(string: res.link) {
+                                    Link("View Item", destination: url)
+                                        .font(.caption2)
+                                        .foregroundColor(.blue)
+                                }
+                            }
+                        }
+                    } else {
+                        // otherwise shows plain text
+                        Text(result)
+                            .padding()
+                            .font(.caption)
+                            .foregroundColor(.black)
+                            .background(Color.white.opacity(0.8))
+                            .cornerRadius(8)
+                    }
                     
                     // Save button
                     Button("SAVE TO FAVORITES") {
