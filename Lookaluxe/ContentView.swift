@@ -35,8 +35,10 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                Image(systemName: "diamond")
-                    .imageScale(.large)
+                Image("img")
+                    .resizable()
+                    .frame(width:50, height:50)
+//                    .imageScale(.small)
                     .foregroundStyle(Color(red: 191/255, green: 121/255, blue: 71/255))
                     .padding(10)
                     .background(
