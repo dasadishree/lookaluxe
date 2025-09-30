@@ -7,6 +7,8 @@ Upload/take a picture
 Get similar budget-friendly alternatives
 Save to your favorites to buy later!
 
-Frontend: Swift UI
-Swift Data to store results to favorites
+Frontend: Swift UI, Swift Data to store results to favorites
+
 Backend: Python Flask using MobileNetV2 AI model trained on ImageNet to recognize objects, Serp API to fetch shopping results 
+
+[![Athena Award Badge](https://img.shields.io/endpoint?url=https%3A%2F%2Faward.athena.hackclub.com%2Fapi%2Fbadge)](https://award.athena.hackclub.com?utm_source=readme)
